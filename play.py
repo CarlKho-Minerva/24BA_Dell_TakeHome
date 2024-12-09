@@ -8,38 +8,88 @@ def clean_currency(value):
     """Convert currency strings like ' $ 12.50 ' or '$12.00' to float"""
     if isinstance(value, str):
         value = value.strip()
-        if value.startswith("$"):
-            value = value.replace("$", "").strip()
-        return float(value)
+        if value.startswith('$'):
+            value = value.replace('$', '').strip()
+        try:
+            return float(value)
+        except ValueError:
+            print(f"Error: Invalid currency value: '{value}'")
+            return 0.0
     return float(value)
 
 
+def clean_date(value):
+    """Normalize date format MMDDYY"""
+    if isinstance(value, str):
+        value = value.strip()
+        if len(value) == 6:  # Already in MMDDYY format
+            return value
+        # Add more date format handling if needed
+    return value
+
+
 def load_tar_file(filepath):
-    tar_data = {}
-    with open(filepath, 'r') as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            key = (row['SPA'], row['Service Code'])
-            tar_data[key] = {
-                'Charge': row['Charge'],
-                'Stop Date': row['Stop Date'],
-                'New Charge': row['New Charge']
-            }
-    return tar_data
+    try:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        full_path = os.path.join(script_dir, filepath)
+
+        if not os.path.exists(full_path):
+            print(f"Error: File not found: {full_path}")
+            sys.exit(1)
+
+        tar_data = {}
+        with open(full_path, 'r') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                try:
+                    key = (row['SPA'].strip(), row['Service Code'].strip())
+                    tar_data[key] = {
+                        'Charge': clean_currency(row['Charge']),
+                        'Stop Date': clean_date(row['Stop Date']),
+                        'New Charge': clean_currency(row['New Charge'])
+                    }
+                except KeyError as e:
+                    print(f"Error: Missing column in TAR file: {e}")
+                    print(f"Available columns: {list(row.keys())}")
+                    sys.exit(1)
+        return tar_data
+    except Exception as e:
+        print(f"Error reading TAR file: {str(e)}")
+        sys.exit(1)
 
 
 def load_ecb_file(filepath):
-    ecb_data = {}
-    with open(filepath, 'r') as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            key = (row['SPA'], row['Service Code'])
-            ecb_data[key] = {
-                'Charge': row['Charge'],
-                'Stop Date': row['Stop Date'],
-                'New Charge': row['New Charge']
-            }
-    return ecb_data
+    try:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        full_path = os.path.join(script_dir, filepath)
+
+        if not os.path.exists(full_path):
+            print(f"Error: File not found: {full_path}")
+            sys.exit(1)
+
+        ecb_data = {}
+        with open(full_path, 'r') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                try:
+                    key = (row['SPA'].strip(), row['Service Code'].strip())
+                    ecb_data[key] = {
+                        'Charge': clean_currency(row['Charge']),
+                        'Stop Date': clean_date(row['Stop Date']),
+                        'New Charge': clean_currency(row['New Charge']),
+                        'Record Desc': row['Record Desc'].strip(),
+                        'System': row['System'].strip(),
+                        'Prin': row['Prin'].strip(),
+                        'Agent': row['Agent'].strip()
+                    }
+                except KeyError as e:
+                    print(f"Error: Missing column in ECB file: {e}")
+                    print(f"Available columns: {list(row.keys())}")
+                    sys.exit(1)
+        return ecb_data
+    except Exception as e:
+        print(f"Error reading ECB file: {str(e)}")
+        sys.exit(1)
 
 
 def compare_files(tar_data, ecb_data):
@@ -128,15 +178,15 @@ def main():
     tar_file = "ServiceCodes_TAR.csv"
     ecb_file = "ServiceCodes_ECB.csv"
 
-    print("Loading TAR file...")
+    print("Loading and normalizing TAR file data...")
     tar_data = load_tar_file(tar_file)
     print(f"Loaded {len(tar_data)} records from TAR file")
 
-    print("\nLoading ECB file...")
+    print("\nLoading and normalizing ECB file data...")
     ecb_data = load_ecb_file(ecb_file)
     print(f"Loaded {len(ecb_data)} records from ECB file")
 
-    print("\nComparing files...")
+    print("\nComparing normalized data...")
     discrepancies = compare_files(tar_data, ecb_data)
     print_discrepancies(discrepancies)
 
