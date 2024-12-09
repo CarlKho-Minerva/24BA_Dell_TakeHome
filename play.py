@@ -8,8 +8,8 @@ def clean_currency(value):
     """Convert currency strings like ' $ 12.50 ' or '$12.00' to float"""
     if isinstance(value, str):
         value = value.strip()
-        if value.startswith('$'):
-            value = value.replace('$', '').strip()
+        if value.startswith("$"):
+            value = value.replace("$", "").strip()
         try:
             return float(value)
         except ValueError:
@@ -38,15 +38,15 @@ def load_tar_file(filepath):
             sys.exit(1)
 
         tar_data = {}
-        with open(full_path, 'r') as f:
+        with open(full_path, "r") as f:
             reader = csv.DictReader(f)
             for row in reader:
                 try:
-                    key = (row['SPA'].strip(), row['Service Code'].strip())
+                    key = (row["SPA"].strip(), row["Service Code"].strip())
                     tar_data[key] = {
-                        'Charge': clean_currency(row['Charge']),
-                        'Stop Date': clean_date(row['Stop Date']),
-                        'New Charge': clean_currency(row['New Charge'])
+                        "Charge": clean_currency(row["Charge"]),
+                        "Stop Date": clean_date(row["Stop Date"]),
+                        "New Charge": clean_currency(row["New Charge"]),
                     }
                 except KeyError as e:
                     print(f"Error: Missing column in TAR file: {e}")
@@ -68,19 +68,19 @@ def load_ecb_file(filepath):
             sys.exit(1)
 
         ecb_data = {}
-        with open(full_path, 'r') as f:
+        with open(full_path, "r") as f:
             reader = csv.DictReader(f)
             for row in reader:
                 try:
-                    key = (row['SPA'].strip(), row['Service Code'].strip())
+                    key = (row["SPA"].strip(), row["Service Code"].strip())
                     ecb_data[key] = {
-                        'Charge': clean_currency(row['Charge']),
-                        'Stop Date': clean_date(row['Stop Date']),
-                        'New Charge': clean_currency(row['New Charge']),
-                        'Record Desc': row['Record Desc'].strip(),
-                        'System': row['System'].strip(),
-                        'Prin': row['Prin'].strip(),
-                        'Agent': row['Agent'].strip()
+                        "Charge": clean_currency(row["Charge"]),
+                        "Stop Date": clean_date(row["Stop Date"]),
+                        "New Charge": clean_currency(row["New Charge"]),
+                        "Record Desc": row["Record Desc"].strip(),
+                        "System": row["System"].strip(),
+                        "Prin": row["Prin"].strip(),
+                        "Agent": row["Agent"].strip(),
                     }
                 except KeyError as e:
                     print(f"Error: Missing column in ECB file: {e}")
@@ -92,61 +92,44 @@ def load_ecb_file(filepath):
         sys.exit(1)
 
 
-def compare_files(tar_data, ecb_data):
-    discrepancies = []
+class TransactionComparator:
+    def __init__(self):
+        self.discrepancies = []
 
-    # Check records in TAR missing from ECB
-    for key in tar_data:
-        if key not in ecb_data:
-            discrepancies.append(
-                {"type": "missing_from_ecb", "spa": key[0], "service_code": key[1]}
-            )
-        else:
-            # Compare fields that should match
-            tar_record = tar_data[key]
-            ecb_record = ecb_data[key]
+    def add_discrepancy(self, disc_type, spa, service_code, tar_value=None, ecb_value=None):
+        self.discrepancies.append({
+            "type": disc_type,
+            "spa": spa,
+            "service_code": service_code,
+            "tar_value": tar_value,
+            "ecb_value": ecb_value
+        })
 
-            if tar_record["Charge"] != ecb_record["Charge"]:
-                discrepancies.append(
-                    {
-                        "type": "charge_mismatch",
-                        "spa": key[0],
-                        "service_code": key[1],
-                        "tar_value": tar_record["Charge"],
-                        "ecb_value": ecb_record["Charge"],
-                    }
-                )
+    def compare_files(self, tar_data, ecb_data):
+        # Check records in TAR missing from ECB
+        for key in tar_data:
+            if key not in ecb_data:
+                self.add_discrepancy("missing_from_ecb", key[0], key[1])
+            else:
+                # Compare fields that should match
+                tar_record = tar_data[key]
+                ecb_record = ecb_data[key]
 
-            if tar_record["Stop Date"] != ecb_record["Stop Date"]:
-                discrepancies.append(
-                    {
-                        "type": "stop_date_mismatch",
-                        "spa": key[0],
-                        "service_code": key[1],
-                        "tar_value": tar_record["Stop Date"],
-                        "ecb_value": ecb_record["Stop Date"],
-                    }
-                )
+                if tar_record["Charge"] != ecb_record["Charge"]:
+                    self.add_discrepancy("charge_mismatch", key[0], key[1], tar_record["Charge"], ecb_record["Charge"])
 
-            if tar_record["New Charge"] != ecb_record["New Charge"]:
-                discrepancies.append(
-                    {
-                        "type": "new_charge_mismatch",
-                        "spa": key[0],
-                        "service_code": key[1],
-                        "tar_value": tar_record["New Charge"],
-                        "ecb_value": ecb_record["New Charge"],
-                    }
-                )
+                if tar_record["Stop Date"] != ecb_record["Stop Date"]:
+                    self.add_discrepancy("stop_date_mismatch", key[0], key[1], tar_record["Stop Date"], ecb_record["Stop Date"])
 
-    # Check records in ECB missing from TAR
-    for key in ecb_data:
-        if key not in tar_data:
-            discrepancies.append(
-                {"type": "missing_from_tar", "spa": key[0], "service_code": key[1]}
-            )
+                if tar_record["New Charge"] != ecb_record["New Charge"]:
+                    self.add_discrepancy("new_charge_mismatch", key[0], key[1], tar_record["New Charge"], ecb_record["New Charge"])
 
-    return discrepancies
+        # Check records in ECB missing from TAR
+        for key in ecb_data:
+            if key not in tar_data:
+                self.add_discrepancy("missing_from_tar", key[0], key[1])
+
+        return self.discrepancies
 
 
 def print_discrepancies(discrepancies):
@@ -187,7 +170,8 @@ def main():
     print(f"Loaded {len(ecb_data)} records from ECB file")
 
     print("\nComparing normalized data...")
-    discrepancies = compare_files(tar_data, ecb_data)
+    comparator = TransactionComparator()
+    discrepancies = comparator.compare_files(tar_data, ecb_data)
     print_discrepancies(discrepancies)
 
 
