@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mt-5">
+    <div class="col-md-8 offset-md-2">
+        <h2>File Comparison Tool</h2>
+        <form id="upload-form" class="mt-4">
+            <div class="mb-3">
+                <label for="tar-file" class="form-label">TAR File</label>
+                <input type="file" class="form-control" id="tar-file" name="tar_file" accept=".csv" required>
+            </div>
+            <div class="mb-3">
+                <label for="ecb-file" class="form-label">ECB File</label>
+                <input type="file" class="form-control" id="ecb-file" name="ecb_file" accept=".csv" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Compare Files</button>
+        </form>
+        <div id="results" class="mt-4"></div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('upload-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+
+        try {
+            const response = await fetch('/compare', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            // Display results
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = ''; // Clear previous results
+            data.discrepancies.forEach(d => {
+                resultsDiv.innerHTML += `<div class="alert alert-warning">${d.title}<br>SPA: ${d.spa}<br>Service Code: ${d.service_code}</div>`;
+            });
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+</script>
+{% endblock %}
