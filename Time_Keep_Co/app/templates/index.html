@@ -46,214 +46,289 @@
 </div>
 
 <style>
-:root {
-    --dell-blue: #007DB8;
-    --dell-gray: #444444;
-    --dell-light-blue: #F2F7FB;
-    --dell-border: #D6D6D6;
-}
+    :root {
+        --dell-blue: #007DB8;
+        --dell-gray: #444444;
+        --dell-light-blue: #F2F7FB;
+        --dell-border: #D6D6D6;
+    }
 
-.card {
-    border-color: var(--dell-border);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
+    .card {
+        border-color: var(--dell-border);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
 
-.btn-primary {
-    background-color: var(--dell-blue);
-    border-color: var(--dell-blue);
-}
+    .btn-primary {
+        background-color: var(--dell-blue);
+        border-color: var(--dell-blue);
+    }
 
-.btn-primary:hover {
-    background-color: #006699;
-    border-color: #006699;
-}
+    .btn-primary:hover {
+        background-color: #006699;
+        border-color: #006699;
+    }
 
-.discrepancy-item {
-    border-left: 3px solid var(--dell-border);
-    margin: 8px 0;
-    padding: 12px;
-    background: white;
-    transition: all 0.2s ease;
-}
-
-.discrepancy-item:hover {
-    border-left-color: var(--dell-blue);
-    background: var(--dell-light-blue);
-}
-
-.accordion-button:not(.collapsed) {
-    background-color: var(--dell-light-blue);
-    color: var(--dell-blue);
-}
-
-.type-badge {
-    font-size: 0.8em;
-    padding: 4px 10px;
-    border-radius: 4px;
-    margin-right: 8px;
-    background: var(--dell-light-blue);
-    color: var(--dell-gray);
-    border: 1px solid var(--dell-border);
-}
-
-.comparison-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
-    margin-top: 10px;
-}
-
-.value-box {
-    padding: 10px;
-    border-radius: 4px;
-    background: white;
-    border: 1px solid var(--dell-border);
-}
-
-.tar-value { border-left: 3px solid #0076CE; }
-.ecb-value { border-left: 3px solid #00447C; }
-
-@media (min-width: 768px) {
     .discrepancy-item {
+        border-left: 3px solid var(--dell-border);
+        padding: 16px;
+        background: white;
+        height: 100%;
+    }
+
+    .accordion-body {
         display: grid;
-        grid-template-columns: 250px 1fr;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
         gap: 16px;
+        padding: 20px;
+    }
+
+    .type-badge {
+        display: inline-flex;
         align-items: center;
+        font-size: 0.9em;
+        padding: 6px 12px;
+        border-radius: 4px;
+        margin-right: 8px;
+        background: var(--dell-light-blue);
+        color: var(--dell-gray);
+    }
+
+    .system-code {
+        font-family: monospace;
+        background: #f8f9fa;
+        padding: 2px 6px;
+        border-radius: 3px;
+        margin-right: 4px;
+    }
+
+    .code-tooltip {
+        cursor: help;
+        border-bottom: 1px dotted var(--dell-blue);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: var(--dell-gray);
+        background: var(--dell-light-blue);
+        border-radius: 4px;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background-color: var(--dell-light-blue);
+        color: var(--dell-blue);
     }
 
     .comparison-grid {
-        margin-top: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+        margin-top: 10px;
     }
-}
 
-#summary {
-    background: var(--dell-light-blue);
-    border: 1px solid var(--dell-border);
-    border-left: 4px solid var(--dell-blue);
-}
+    .value-box {
+        padding: 10px;
+        border-radius: 4px;
+        background: white;
+        border: 1px solid var(--dell-border);
+    }
 
-.accordion-button:focus {
-    border-color: var(--dell-blue);
-    box-shadow: 0 0 0 0.25rem rgba(0,125,184,0.25);
-}
+    .tar-value {
+        border-left: 3px solid #0076CE;
+    }
+
+    .ecb-value {
+        border-left: 3px solid #00447C;
+    }
+
+    @media (min-width: 768px) {
+        .discrepancy-item {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .comparison-grid {
+            margin-top: 0;
+        }
+    }
+
+    #summary {
+        background: var(--dell-light-blue);
+        border: 1px solid var(--dell-border);
+        border-left: 4px solid var(--dell-blue);
+    }
+
+    .accordion-button:focus {
+        border-color: var(--dell-blue);
+        box-shadow: 0 0 0 0.25rem rgba(0, 125, 184, 0.25);
+    }
 </style>
 
 <script>
-const typeLabels = {
-    'missing_from_ecb': 'Missing from ECB',
-    'missing_from_tar': 'Missing from TAR',
-    'charge_mismatch': 'Charge Mismatch',
-    'stop_date_mismatch': 'Stop Date Mismatch',
-    'new_charge_mismatch': 'New Charge Mismatch'
-};
+    const typeLabels = {
+        'missing_from_ecb': 'Missing from ECB',
+        'missing_from_tar': 'Missing from TAR',
+        'charge_mismatch': 'Charge Mismatch',
+        'stop_date_mismatch': 'Stop Date Mismatch',
+        'new_charge_mismatch': 'New Charge Mismatch'
+    };
 
-document.getElementById('upload-form').onsubmit = async (e) => {
-    e.preventDefault();
-    showLoading(true);
+    const systemCodes = {
+        'VP001': 'Volume Processing - Basic',
+        'VP068': 'Volume Processing - Advanced',
+        'VP227': 'Volume Processing - Premium',
+        'VP324': 'Volume Processing - Enterprise',
+        '8155SYS TOT': 'System Total Entry',
+        '81557000TOT': 'Total Summary Record'
+    };
 
-    try {
-        const formData = new FormData(e.target);
-        const response = await fetch('/compare', {
-            method: 'POST',
-            body: formData
-        });
-        const data = await response.json();
+    document.getElementById('upload-form').onsubmit = async (e) => {
+        e.preventDefault();
+        showLoading(true);
 
-        if (response.ok) {
-            displayResults(data.discrepancies);
-            showToast('Success', 'Files compared successfully!', 'success');
-        } else {
-            throw new Error(data.error || 'Failed to compare files');
+        try {
+            const formData = new FormData(e.target);
+            const response = await fetch('/compare', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+                displayResults(data.discrepancies);
+                showToast('Success', 'Files compared successfully!', 'success');
+            } else {
+                throw new Error(data.error || 'Failed to compare files');
+            }
+        } catch (error) {
+            showToast('Error', error.message, 'error');
+            clearResults();
+        } finally {
+            showLoading(false);
         }
-    } catch (error) {
-        showToast('Error', error.message, 'error');
-        clearResults();
-    } finally {
-        showLoading(false);
+    };
+
+    function displayResults(discrepancies) {
+        const accordion = document.getElementById('discrepancyAccordion');
+        accordion.innerHTML = '';
+
+        // Ensure all discrepancy types are shown
+        const allTypes = Object.keys(typeLabels);
+        const grouped = allTypes.reduce((acc, type) => {
+            acc[type] = discrepancies.filter(d => d.type === type);
+            return acc;
+        }, {});
+
+        displaySummary(grouped);
+
+        // Create accordion items for all types
+        Object.entries(typeLabels).forEach(([type, label], index) => {
+            const items = grouped[type] || [];
+            const accordionItem = createAccordionItem(type, items, label, index);
+            accordion.appendChild(accordionItem);
+        });
     }
-};
 
-function displayResults(discrepancies) {
-    const resultsDiv = document.getElementById('results');
-    const accordion = document.getElementById('discrepancyAccordion');
-    accordion.innerHTML = '';
+    function createAccordionItem(type, items, label, index) {
+        const div = document.createElement('div');
+        div.className = 'accordion-item';
 
-    // Group discrepancies by type
-    const grouped = discrepancies.reduce((acc, curr) => {
-        (acc[curr.type] = acc[curr.type] || []).push(curr);
-        return acc;
-    }, {});
+        const content = items.length > 0
+            ? items.map(item => createDiscrepancyItem(item)).join('')
+            : `<div class="empty-state">
+             <i class="bi bi-check-circle"></i>
+             <p>No ${label.toLowerCase()} discrepancies found</p>
+           </div>`;
 
-    // Display summary
-    displaySummary(grouped);
-
-    // Create accordion items for each type
-    Object.entries(grouped).forEach(([type, items], index) => {
-        const accordionItem = createAccordionItem(type, items, index);
-        accordion.appendChild(accordionItem);
-    });
-
-    resultsDiv.classList.remove('d-none');
-}
-
-function createAccordionItem(type, items, index) {
-    const div = document.createElement('div');
-    div.className = 'accordion-item';
-    div.innerHTML = `
+        div.innerHTML = `
         <h2 class="accordion-header">
             <button class="accordion-button ${index > 0 ? 'collapsed' : ''}" type="button"
                     data-bs-toggle="collapse" data-bs-target="#collapse${index}">
-                ${typeLabels[type]} (${items.length})
+                ${label}
+                <span class="badge bg-secondary ms-2">${items.length}</span>
             </button>
         </h2>
         <div id="collapse${index}" class="accordion-collapse collapse ${index === 0 ? 'show' : ''}"
              data-bs-parent="#discrepancyAccordion">
             <div class="accordion-body">
-                ${items.map(item => createDiscrepancyItem(item)).join('')}
+                ${content}
             </div>
         </div>
     `;
-    return div;
-}
+        return div;
+    }
 
-function createDiscrepancyItem(item) {
-    return `
+    function createDiscrepancyItem(item) {
+        const codeInfo = systemCodes[item.service_code] || 'Service Code';
+
+        return `
         <div class="discrepancy-item">
-            <div class="d-flex align-items-center mb-2">
-                <span class="type-badge bg-primary">${item.spa}</span>
-                <span class="type-badge bg-secondary">${item.service_code}</span>
+            <div class="d-flex flex-column mb-3">
+                <span class="type-badge">
+                    <span class="system-code code-tooltip"
+                          title="${codeInfo}">${item.service_code}</span>
+                    ${item.spa}
+                </span>
             </div>
             ${createComparisonView(item)}
         </div>
     `;
-}
+    }
 
-function showLoading(show) {
-    const spinner = document.getElementById('loading-spinner');
-    const submitBtn = document.getElementById('submit-btn');
-    spinner.classList.toggle('d-none', !show);
-    submitBtn.disabled = show;
-}
+    // Initialize tooltips after content is added
+    document.addEventListener('DOMContentLoaded', () => {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+        tooltipTriggerList.map(el => new bootstrap.Tooltip(el));
+    });
 
-function showToast(title, message, type) {
-    const toast = document.getElementById('statusToast');
-    const toastTitle = document.getElementById('toastTitle');
-    const toastMessage = document.getElementById('toastMessage');
+    // Add visual feedback for file validation
+    document.querySelectorAll('input[type="file"]').forEach(input => {
+        input.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            const feedback = document.createElement('div');
 
-    toastTitle.textContent = title;
-    toastMessage.textContent = message;
-    toast.classList.toggle('bg-danger', type === 'error');
-    toast.classList.toggle('bg-success', type === 'success');
+            if (file && file.name.endsWith('.csv')) {
+                feedback.className = 'valid-feedback d-block';
+                feedback.textContent = `File selected: ${file.name}`;
+            } else {
+                feedback.className = 'invalid-feedback d-block';
+                feedback.textContent = 'Please select a CSV file';
+            }
 
-    const bsToast = new bootstrap.Toast(toast);
-    bsToast.show();
-}
+            const existing = input.parentNode.querySelector('.valid-feedback, .invalid-feedback');
+            if (existing) existing.remove();
+            input.parentNode.appendChild(feedback);
+        });
+    });
 
-function displaySummary(grouped) {
-    const summary = document.getElementById('summary');
-    const total = Object.values(grouped).flat().length;
+    function showLoading(show) {
+        const spinner = document.getElementById('loading-spinner');
+        const submitBtn = document.getElementById('submit-btn');
+        spinner.classList.toggle('d-none', !show);
+        submitBtn.disabled = show;
+    }
 
-    const summaryHtml = `
+    function showToast(title, message, type) {
+        const toast = document.getElementById('statusToast');
+        const toastTitle = document.getElementById('toastTitle');
+        const toastMessage = document.getElementById('toastMessage');
+
+        toastTitle.textContent = title;
+        toastMessage.textContent = message;
+        toast.classList.toggle('bg-danger', type === 'error');
+        toast.classList.toggle('bg-success', type === 'success');
+
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+    }
+
+    function displaySummary(grouped) {
+        const summary = document.getElementById('summary');
+        const total = Object.values(grouped).flat().length;
+
+        const summaryHtml = `
         <h4>Summary of Discrepancies</h4>
         <ul class="list-unstyled">
             ${Object.entries(grouped).map(([type, items]) => `
@@ -265,18 +340,18 @@ function displaySummary(grouped) {
         </ul>
     `;
 
-    summary.innerHTML = summaryHtml;
-    summary.classList.remove('d-none');
-}
-
-function createComparisonView(item) {
-    if (item.type.includes('missing_from')) {
-        return `<div class="alert alert-warning">
-            ${item.type === 'missing_from_ecb' ? 'Record exists in TAR but not in ECB' : 'Record exists in ECB but not in TAR'}
-        </div>`;
+        summary.innerHTML = summaryHtml;
+        summary.classList.remove('d-none');
     }
 
-    return `
+    function createComparisonView(item) {
+        if (item.type.includes('missing_from')) {
+            return `<div class="alert alert-warning">
+            ${item.type === 'missing_from_ecb' ? 'Record exists in TAR but not in ECB' : 'Record exists in ECB but not in TAR'}
+        </div>`;
+        }
+
+        return `
         <div class="comparison-grid">
             <div class="value-box tar-value">
                 <small class="text-muted">TAR Value</small>
@@ -288,16 +363,16 @@ function createComparisonView(item) {
             </div>
         </div>
     `;
-}
+    }
 
-function clearResults() {
-    const resultsDiv = document.getElementById('results');
-    const accordion = document.getElementById('discrepancyAccordion');
-    const summary = document.getElementById('summary');
+    function clearResults() {
+        const resultsDiv = document.getElementById('results');
+        const accordion = document.getElementById('discrepancyAccordion');
+        const summary = document.getElementById('summary');
 
-    accordion.innerHTML = '';
-    summary.classList.add('d-none');
-    summary.innerHTML = '';
-}
+        accordion.innerHTML = '';
+        summary.classList.add('d-none');
+        summary.innerHTML = '';
+    }
 </script>
 {% endblock %}
