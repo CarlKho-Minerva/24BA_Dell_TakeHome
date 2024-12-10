@@ -1,11 +1,16 @@
 from flask import Blueprint, render_template, request, jsonify, current_app
 from werkzeug.utils import secure_filename
 import os
+import logging
+from typing import Dict, Tuple, Any
 from utils.data_loader import load_tar_file, load_ecb_file
 from utils.comparator import TransactionComparator, format_discrepancies
 
+logger = logging.getLogger(__name__)
 main = Blueprint("main", __name__)
 
+def allowed_file(filename: str) -> bool:
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
 
 @main.route("/")
 def index():
@@ -13,35 +18,53 @@ def index():
 
 
 @main.route("/compare", methods=["POST"])
-def compare_files():
-    if "tar_file" not in request.files or "ecb_file" not in request.files:
-        return jsonify({"error": "Both files are required"}), 400
+def compare_files() -> Tuple[Dict[str, Any], int]:
+    try:
+        if "tar_file" not in request.files or "ecb_file" not in request.files:
+            logger.error("Missing required files in request")
+            return jsonify({"error": "Both TAR and ECB files are required"}), 400
 
-    tar_file = request.files["tar_file"]
-    ecb_file = request.files["ecb_file"]
+        tar_file = request.files["tar_file"]
+        ecb_file = request.files["ecb_file"]
 
-    # Ensure upload directory exists
-    os.makedirs(current_app.config["UPLOAD_FOLDER"], exist_ok=True)
+        # Validate file types
+        if not (allowed_file(tar_file.filename) and allowed_file(ecb_file.filename)):
+            logger.error("Invalid file type submitted")
+            return jsonify({"error": "Only CSV files are allowed"}), 400
 
-    # Save files and process
-    tar_path = os.path.join(
-        current_app.config["UPLOAD_FOLDER"], secure_filename(tar_file.filename)
-    )
-    ecb_path = os.path.join(
-        current_app.config["UPLOAD_FOLDER"], secure_filename(ecb_file.filename)
-    )
+        # Process files
+        logger.info(f"Processing files: TAR={tar_file.filename}, ECB={ecb_file.filename}")
 
-    tar_file.save(tar_path)
-    ecb_file.save(ecb_path)
+        # Ensure upload directory exists
+        os.makedirs(current_app.config["UPLOAD_FOLDER"], exist_ok=True)
 
-    tar_data = load_tar_file(tar_path)
-    ecb_data = load_ecb_file(ecb_path)
+        # Save files and process
+        tar_path = os.path.join(
+            current_app.config["UPLOAD_FOLDER"], secure_filename(tar_file.filename)
+        )
+        ecb_path = os.path.join(
+            current_app.config["UPLOAD_FOLDER"], secure_filename(ecb_file.filename)
+        )
 
-    comparator = TransactionComparator()
-    discrepancies = comparator.compare_files(tar_data, ecb_data)
+        tar_file.save(tar_path)
+        ecb_file.save(ecb_path)
 
-    # Cleanup
-    os.remove(tar_path)
-    os.remove(ecb_path)
+        try:
+            tar_data = load_tar_file(tar_path)
+            ecb_data = load_ecb_file(ecb_path)
+        except Exception as e:
+            logger.error(f"Error loading files: {str(e)}")
+            return jsonify({"error": "Error processing files"}), 500
 
-    return jsonify({"discrepancies": format_discrepancies(discrepancies)})
+        comparator = TransactionComparator()
+        discrepancies = comparator.compare_files(tar_data, ecb_data)
+
+        # Cleanup
+        os.remove(tar_path)
+        os.remove(ecb_path)
+
+        return jsonify({"discrepancies": format_discrepancies(discrepancies)})
+
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
+        return jsonify({"error": "An unexpected error occurred"}), 500

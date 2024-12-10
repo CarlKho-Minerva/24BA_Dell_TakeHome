@@ -63,27 +63,33 @@ class TransactionComparator:
 def format_discrepancies(discrepancies):
     formatted = []
     for d in discrepancies:
-        item = {}
+        item = {
+            "type": d["type"],
+            "spa": d["spa"],
+            "service_code": d["service_code"],
+            "tar_value": None,
+            "ecb_value": None,
+        }
+
         if d["type"] == "missing_from_ecb":
-            item = {
-                "title": "Transaction missing from ECB file",
-                "spa": d["spa"],
-                "service_code": d["service_code"],
-            }
+            item["title"] = "Transaction missing from ECB file"
         elif d["type"] == "missing_from_tar":
-            item = {
-                "title": "Transaction missing from TAR file",
-                "spa": d["spa"],
-                "service_code": d["service_code"],
-            }
+            item["title"] = "Transaction missing from TAR file"
         elif d["type"].endswith("_mismatch"):
             field = d["type"].replace("_mismatch", "").replace("_", " ").title()
-            item = {
-                "title": f"{field} mismatch found",
-                "spa": d["spa"],
-                "service_code": d["service_code"],
-                "tar_value": d["tar_value"],
-                "ecb_value": d["ecb_value"],
-            }
+            item.update(
+                {
+                    "title": f"{field} mismatch found",
+                    "tar_value": format_value(d["tar_value"]),
+                    "ecb_value": format_value(d["ecb_value"]),
+                }
+            )
         formatted.append(item)
     return formatted
+
+
+def format_value(value):
+    """Format values for display"""
+    if isinstance(value, float):
+        return f"${value:,.2f}"
+    return str(value)
