@@ -43,7 +43,8 @@ class TransactionComparator:
                         ecb_record["Stop Date"],
                     )
 
-                if tar_record["New Charge"] != ecb_record["New Charge"]:
+                if (tar_record["New Charge"] or ecb_record["New Charge"]) and \
+                   tar_record["New Charge"] != ecb_record["New Charge"]:
                     self.add_discrepancy(
                         "new_charge_mismatch",
                         key[0],
