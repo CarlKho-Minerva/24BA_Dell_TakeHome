@@ -1,0 +1,184 @@
+/* Adjusted Color Palette for Subtlety */
+:root {
+    --dell-blue: #007db8;
+    --dell-light-blue: #e6f2f8;
+    --dell-dark-gray: #333333;
+    --dell-gray: #555555;
+    --dell-light-gray: #f7f7f7;
+    --dell-white: #ffffff;
+}
+
+body {
+    background-color: var(--dell-white);
+    color: var(--dell-dark-gray);
+}
+
+.card {
+    border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+    background-color: var(--dell-blue);
+    border-color: var(--dell-blue);
+}
+
+.btn-primary:hover {
+    background-color: #00689a;
+    border-color: #00689a;
+}
+
+.discrepancy-item {
+    padding: 16px;
+    background-color: var(--dell-light-gray);
+    border: 1px solid var(--dell-light-gray);
+    border-radius: 4px;
+}
+
+.accordion-body {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    padding: 16px;
+}
+
+.type-badge {
+    background-color: var(--dell-light-blue);
+    color: var(--dell-dark-gray);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+
+.system-code {
+    color: var(--dell-dark-gray);
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.code-tooltip {
+    cursor: help;
+    text-decoration: dotted underline;
+}
+
+.comparison-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.value-box {
+    background-color: var(--dell-white);
+    padding: 12px;
+    border-radius: 4px;
+    border-left: 4px solid var(--dell-light-blue);
+}
+
+.tar-value {
+    border-left-color: var(--dell-blue);
+}
+
+.ecb-value {
+    border-left-color: #005f8a;
+}
+
+.alert-warning {
+    background-color: #fff8e1;
+    color: #8a6d3b;
+    border-color: #ffe8a1;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: var(--dell-light-blue);
+    color: var(--dell-dark-gray);
+}
+
+.accordion-button.collapsed {
+    background-color: var(--dell-white);
+    color: var(--dell-dark-gray);
+}
+
+.accordion-item {
+    border: none;
+    border-bottom: 1px solid var(--dell-light-gray);
+}
+
+#summary {
+    background-color: var(--dell-light-gray);
+    border-left: 4px solid var(--dell-blue);
+    padding: 16px;
+    border-radius: 4px;
+}
+
+/* Improved spacing */
+.card-title {
+    margin-bottom: 24px;
+}
+
+.form-label {
+    font-weight: bold;
+}
+
+.btn {
+    padding: 10px 20px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--dell-gray);
+}
+
+/* Styles for the filter panel */
+#filter-panel {
+    padding: 16px;
+    background-color: var(--dell-light-blue);
+    border-radius: 4px;
+}
+
+.filter-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.filter-options label {
+    display: flex;
+    align-items: center;
+}
+
+.filter-options input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.sticky-sidebar {
+    position: sticky;
+    top: 20px;
+    z-index: 100;
+}
+
+.filter-card {
+    background: var(--dell-white);
+    padding: 16px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.filter-options {
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-options label {
+    padding: 4px 0;
+    margin: 0;
+    cursor: pointer;
+}
+
+.filter-options label:hover {
+    background-color: var(--dell-light-blue);
+    border-radius: 4px;
+}
