@@ -1,6 +1,28 @@
+```mermaid
+graph TD;
+    A[Frontend] -->|API Calls| B[Backend]
+    B -->|SQL Queries| C[Database]
+
+    subgraph Frontend
+    A1[React]
+    A2[React Router]
+    A3[Tailwind CSS (CDN)]
+    end
+
+    subgraph Backend
+    B1[Python]
+    B2[Flask]
+    end
+
+    subgraph Database
+    C1[SQLite]
+    end
+```
+
 # Things I learned
 
 - Using concurrently to run both the frontend and backend servers at the same time.
+
   ```json
   "scripts": {
     "start": "react-scripts start",
@@ -11,6 +33,7 @@
     "dev": "concurrently \"npm run backend\" \"npm start\""
   },
   ```
+
 - Adding `"proxy": "http://127.0.0.1:5000",` to package.json to resolve CORS issue when making requests to the backend.
 
 # Getting Started with Create React App
