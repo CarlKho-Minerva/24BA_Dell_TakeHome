@@ -5,7 +5,16 @@ function Home() {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    // ... (logout logic from previous steps)
+    try {
+      const response = await fetch("/api/logout");
+      if (response.ok) {
+        navigate("/login"); // Redirect to login page
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
   };
 
   return (
@@ -60,7 +69,7 @@ function Home() {
           {/* Destination Card (Example) */}
           <div className="bg-white rounded-lg shadow-md p-4">
             <img
-              src="https://via.placeholder.com/400x250"
+              src="https://images.unsplash.com/photo-1633578908443-5267c00ac970?q=80&w=2512&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               alt="Caribbean"
               className="w-full h-48 object-cover rounded-t-lg"
             />

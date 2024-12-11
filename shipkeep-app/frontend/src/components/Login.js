@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 function Login({ setIsLoggedIn }) {
   const [username, setUsername] = useState("");
@@ -80,6 +80,19 @@ function Login({ setIsLoggedIn }) {
             Login
           </button>
         </form>
+
+        {/* Sign Up Link */}
+        <div className="mt-4 text-center">
+          <p className="text-gray-700">
+            Don't have an account?{" "}
+            <Link
+              to="/signup"
+              className="text-blue-500 hover:text-blue-700 font-medium"
+            >
+              Sign Up
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
