@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Signup() {
   const [username, setUsername] = useState("");
@@ -6,6 +7,7 @@ function Signup() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState(null); // New state for message type
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -29,6 +31,11 @@ function Signup() {
         setUsername("");
         setEmail("");
         setPassword("");
+
+        // Add delay and navigation
+        setTimeout(() => {
+          navigate("/login");
+        }, 3000);
       } else {
         setMessageType("error"); // Set message type to error
       }
