@@ -143,6 +143,23 @@ def login():
         )  # 401 Unauthorized
 
 
+@app.route("/api/check_login")
+def check_login():
+    """Checks if the user is logged in."""
+    if "logged_in" in session and session["logged_in"]:
+        return jsonify({"logged_in": True}), 200
+    else:
+        return jsonify({"logged_in": False}), 401
+
+
+@app.route("/api/logout")
+def logout():
+    """Logs the user out."""
+    session.pop("logged_in", None)  # Remove 'logged_in' from session
+    session.pop("user_id", None)  # Optionally, remove 'user_id'
+    return jsonify({"message": "Logout successful"}), 200
+
+
 # Create the database tables
 with app.app_context():
     db.create_all()

@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-function Login() {
+function Login({ setIsLoggedIn }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -25,8 +27,8 @@ function Login() {
       if (response.ok) {
         // Redirect to home page or update state to indicate logged-in status
         console.log("Login successful - redirect to home page");
-        // Example using React Router:
-        // history.push('/home'); // Assuming you have a route set up for /home
+        setIsLoggedIn(true); // Update login state in App
+        navigate("/"); // Redirect to home page
       }
     } catch (error) {
       console.error("Login error:", error);
