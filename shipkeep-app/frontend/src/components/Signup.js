@@ -5,10 +5,12 @@ function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState(null); // New state for message type
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setMessage("");
+    setMessageType(null); // Reset message type
 
     try {
       const response = await fetch("/api/signup", {
@@ -23,13 +25,17 @@ function Signup() {
       setMessage(data.message);
 
       if (response.ok) {
+        setMessageType("success"); // Set message type to success
         setUsername("");
         setEmail("");
         setPassword("");
+      } else {
+        setMessageType("error"); // Set message type to error
       }
     } catch (error) {
       console.error("Signup error:", error);
       setMessage("An error occurred during signup.");
+      setMessageType("error");
     }
   };
 
@@ -39,7 +45,17 @@ function Signup() {
         <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
           Sign Up
         </h2>
-        {message && <p className="text-red-500 mb-4">{message}</p>}
+        {message && (
+          <p
+            className={
+              messageType === "success"
+                ? "text-green-500 mb-4"
+                : "text-red-500 mb-4"
+            }
+          >
+            {message}
+          </p>
+        )}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
