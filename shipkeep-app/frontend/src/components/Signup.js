@@ -7,6 +7,8 @@ function Signup() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState(null); // New state for message type
+  const [showModal, setShowModal] = useState(false);
+  const [countdown, setCountdown] = useState(3);
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
@@ -31,11 +33,18 @@ function Signup() {
         setUsername("");
         setEmail("");
         setPassword("");
+        setShowModal(true);
 
-        // Add delay and navigation
-        setTimeout(() => {
-          navigate("/login");
-        }, 3000);
+        // Start countdown
+        let count = 3;
+        const timer = setInterval(() => {
+          count--;
+          setCountdown(count);
+          if (count === 0) {
+            clearInterval(timer);
+            navigate("/login");
+          }
+        }, 1000);
       } else {
         setMessageType("error"); // Set message type to error
       }
@@ -120,6 +129,21 @@ function Signup() {
           </button>
         </form>
       </div>
+
+      {/* Success Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full mx-4">
+            <h3 className="text-xl font-semibold text-green-600 mb-2">
+              Success!
+            </h3>
+            <p className="text-gray-600 mb-4">{message}</p>
+            <p className="text-gray-500">
+              Redirecting to login in {countdown} seconds...
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
