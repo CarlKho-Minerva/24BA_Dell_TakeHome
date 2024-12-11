@@ -8,6 +8,7 @@ import {
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Home from "./components/Home";
+import Footer from "./components/Footer";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -53,6 +54,7 @@ function App() {
             element={isLoggedIn ? <Home /> : <Navigate to="/login" />}
           />
         </Routes>
+        <Footer />
       </div>
     </Router>
   );
