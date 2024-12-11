@@ -12,6 +12,11 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"  # Using SQLite, fi
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False  # Silence a warning
 db = SQLAlchemy(app)
 
+# Secret Key (for session management)
+app.secret_key = os.environ.get(
+    "SECRET_KEY", "supersecretkey123!@#"
+)  # Hardcoded secret key for development only
+
 
 # User Model
 class User(db.Model):
@@ -111,6 +116,31 @@ def signup():
             jsonify({"message": "Registration failed", "error": str(e)}),
             500,
         )  # 500 Internal Server Error
+
+
+@app.route("/api/login", methods=["POST"])
+def login():
+    """Handles user login."""
+    data = request.get_json()
+
+    if not data or "username" not in data or "password" not in data:
+        return jsonify({"message": "Bad Request: Missing username or password"}), 400
+
+    username = data["username"]
+    password = data["password"]
+
+    user = User.query.filter_by(username=username).first()
+
+    if user and check_password_hash(user.password_hash, password):
+        # User authenticated, create a session
+        session["logged_in"] = True
+        session["user_id"] = user.id  # Store user ID in the session (optional)
+        return jsonify({"message": "Login successful"}), 200
+    else:
+        return (
+            jsonify({"message": "Invalid username or password"}),
+            401,
+        )  # 401 Unauthorized
 
 
 # Create the database tables
