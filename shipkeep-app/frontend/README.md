@@ -1,3 +1,18 @@
+# Things I learned
+
+- Using concurrently to run both the frontend and backend servers at the same time.
+  ```json
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "backend": "cd ../backend && source venv/bin/activate && flask run",
+    "dev": "concurrently \"npm run backend\" \"npm start\""
+  },
+  ```
+- Adding `"proxy": "http://127.0.0.1:5000",` to package.json to resolve CORS issue when making requests to the backend.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
