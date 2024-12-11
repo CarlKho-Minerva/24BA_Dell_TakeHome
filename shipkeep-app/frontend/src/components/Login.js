@@ -13,7 +13,6 @@ function Login({ setIsLoggedIn }) {
 
     try {
       const response = await fetch("/api/login", {
-        // Using proxy, so just /api/login
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -25,10 +24,8 @@ function Login({ setIsLoggedIn }) {
       setMessage(data.message);
 
       if (response.ok) {
-        // Redirect to home page or update state to indicate logged-in status
-        console.log("Login successful - redirect to home page");
-        setIsLoggedIn(true); // Update login state in App
-        navigate("/"); // Redirect to home page
+        setIsLoggedIn(true);
+        navigate("/");
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -37,32 +34,53 @@ function Login({ setIsLoggedIn }) {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      {message && <p>{message}</p>}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="username">Username:</label>
-          <input
-            type="text"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Login</button>
-      </form>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+          Login
+        </h2>
+        {message && <p className="text-red-500 mb-4">{message}</p>}
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label
+              htmlFor="username"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+              required
+            />
+          </div>
+          <div className="mb-6">
+            <label
+              htmlFor="password"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md"
+          >
+            Login
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
