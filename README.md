@@ -1,5 +1,4 @@
 # Dell File Comparator & ShipKeep Co
-Carl's take-home assignment for the Dell ISG internship role.
 
 ## Overview
 
@@ -20,11 +19,7 @@ This repository contains two distinct applications:
 ### Setup
 
 1. Clone the repository
-2. Navigate to the
-
-Time_Keep_Co
-
- directory
+2. Navigate to the `Time_Keep_Co` directory
 3. Create a virtual environment:
 
    ```bash
