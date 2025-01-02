@@ -257,11 +257,7 @@ In the `frontend` directory, you can run:
 ### Things I Learned
 
 - Using concurrently to run both the frontend and backend servers at the same time.
-- Adding `"proxy": "http://127.0.0.1:5000",` to
-
-package.json
-
- to resolve CORS issues.
+- Adding `"proxy": "http://127.0.0.1:5000",` to `package.json` to resolve CORS issues.
 
 ### Getting Started with Create React App
 
